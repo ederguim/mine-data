@@ -7,90 +7,30 @@ object Parameters {
 
   def parse(args: Array[String]): ParametersModel = {
 
-    new OptionParser[ParametersModel]("spark-mock-s3.jar") {
-      head("S3 Mock")
+    new OptionParser[ParametersModel]("mine-data.jar") {
+      head("Mine Data")
 
       help('h', "help")
 
-      opt[String]("hash-origem")
-        .action((hashOrigem, params) => {
-          params.copy(hashOrigem = cleanUpParameter(hashOrigem))
+      opt[String]("tipo")
+        .action((tipo, params) => {
+          params.copy(tipo = cleanUpParameter(tipo))
         })
         .text(optHelp(
-          "[hash-origem] hash",
-          "--hash-origem hash"
+          "[tipo] lotofacil",
+          "--tipo lotofacil"
         ))
-        .required()
+        .optional()
 
-      opt[String]("odin-pf-filter")
-        .action((odinPfFilter, params) => {
-          params.copy(odinPfFilter = cleanUpParameter(odinPfFilter))
+      opt[String]("origem")
+        .action((origem, params) => {
+          params.copy(origem = cleanUpParameter(origem))
         })
         .text(optHelp(
-          "[odin-pf-filter] path odin pf filter",
-          "--odin-pf-filter /path/pf.filter"
+          "[origem] D:\\work\\repository\\data",
+          "--origem D:\\work\\repository\\data"
         ))
-        .required()
-
-      opt[String]("odin-pf-positive")
-        .action((odinPfPositive, params) => {
-          params.copy(odinPfPositive = cleanUpParameter(odinPfPositive))
-        })
-        .text(optHelp(
-          "[odin-pf-positive] path odin pf positve",
-          "--odin-pf-positive /path/pf.positive"
-        ))
-        .required()
-
-      opt[String]("score")
-        .action((score, params) => {
-          params.copy(score = cleanUpParameter(score))
-        })
-        .text(optHelp(
-          "[score] score",
-          "--score score"
-        ))
-        .required()
-
-      opt[Boolean]("flag-score")
-        .action((flagScore, params) => {
-          params.copy(flagScore = flagScore)
-        })
-        .text(optHelp(
-          "[flag-score] true/false",
-          "--flag-score true"
-        ))
-        .required()
-
-      opt[Int]("start")
-        .action((start, params) => {
-          params.copy(start = start)
-        })
-        .text(optHelp(
-          "[start] 0",
-          "--start 0"
-        ))
-        .required()
-
-      opt[Int]("end")
-        .action((end, params) => {
-          params.copy(end = end)
-        })
-        .text(optHelp(
-          "[end] 10",
-          "--end 10"
-        ))
-        .required()
-
-      opt[String]("book-score")
-        .action((bookScore, params) => {
-          params.copy(bookScore = cleanUpParameter(bookScore))
-        })
-        .text(optHelp(
-          "[book-score] path score",
-          "--book-score /path/score"
-        ))
-        .required()
+        .optional()
 
     }.parse(args, ParametersModel()) match {
       case Some(parameters) => parameters
