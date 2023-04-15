@@ -2,29 +2,29 @@ package com.mine.data.v1
 
 import com.mine.data.v1.config.Parameters
 import com.mine.data.v1.model.ParametersModel
+import com.mine.data.v1.service.Analytics
 import com.mine.data.v1.spark.DataRead.getData
 import com.mine.data.v1.spark.SparkSessionWrapper
-import org.apache.spark.sql.functions._
-import org.apache.spark.sql.types.{DoubleType, IntegerType}
+import org.apache.spark.internal.Logging
 
 
-object Application extends App with SparkSessionWrapper {
+object Application extends App with SparkSessionWrapper with Logging {
   val params: ParametersModel = Parameters.parse(args)
-
-  private var df = getData(params)
-
-  private val x = (1 to 15).toList
-  x.foreach(row => {
-    val index = row.toString
-    val df1 = df.select(col(index).cast(IntegerType))
-    df1
-      .groupBy(index)
-      .agg(
-        count(index).as("quant"),
-        format_string("%s%%", translate(format_number(round((count(index) / df1.count() * 100.0)
-          .cast(DoubleType), 2), 2), ".", ","))
-          .alias("percentual")
-      ).orderBy(col("quant").desc)
-      .show()
-  })
+  private val options: Option[ParametersModel] = Some(params)
+    options match {
+      case Some(value) if (value.megaSena != null) =>
+        val df = getData(params.megaSena)
+        val ganhadores = Analytics.verificaGanhadoresV2(df, params.cols, params.aposta)
+        ganhadores.show(numRows = 10, truncate = false)
+        val percentual = Analytics.percentual(df, params.start, params.end)
+        percentual.foreach(row =>  row.show())
+      case Some(value) if (value.lotoFacil != null) =>
+        val df = getData(params.lotoFacil)
+        val ganhadores = Analytics.verificaGanhadoresV2(df, params.cols, params.aposta)
+        ganhadores.show(numRows = 10, truncate = false)
+        val percentual = Analytics.percentual(df, params.start, params.end)
+        percentual.foreach(row => row.show())
+      case Some(_) => logError("Parametro invalido")
+      case None => throw new Exception("Parametro não fornecido")
+    }
 }

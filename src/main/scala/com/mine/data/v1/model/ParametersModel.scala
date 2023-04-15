@@ -1,8 +1,10 @@
 package com.mine.data.v1.model
 
-import org.apache.commons.lang3.StringUtils.EMPTY
-
 case class ParametersModel(
-                            tipo: String = EMPTY,
-                            origem: String = EMPTY
+                            megaSena: String = null,
+                            lotoFacil: String = null,
+                            aposta: Seq[String] = Seq(),
+                            cols: Seq[String] = Seq(),
+                            start: Int = 0,
+                            end: Int = 0,
                           ) extends Serializable
